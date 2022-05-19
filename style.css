@@ -1,0 +1,35 @@
+body{
+    font-family: system-ui;
+}
+
+#MPS{
+    position: absolute;
+    left: 400px;
+}
+#DPS{
+    position: absolute;
+    left: 400px;
+}
+
+.infoHeader{
+    margin-bottom: 50px;
+}
+
+.incrementers{
+    float: left;
+    top: 70px;
+    outline: 1px solid rgb(133, 134, 133);
+    outline-offset: 5px;
+    
+}
+
+.upgrades{
+    float: left;
+    top: 70px;
+    outline: 1px solid rgb(133, 134, 133);
+    outline-offset: 5px;
+    margin-left: 50px;
+    left: 400px;
+
+}
+
