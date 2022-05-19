@@ -1,18 +1,25 @@
 body{
     font-family: system-ui;
+    margin-left: 50px;
 }
 
 #MPS{
     position: absolute;
     left: 400px;
 }
+
 #DPS{
     position: absolute;
     left: 400px;
 }
 
+#monkeyButton{
+    border-radius: 15px;
+    font-size: 20px;
+}
+
 .infoHeader{
-    margin-bottom: 50px;
+    margin-bottom: 40px;
 }
 
 .incrementers{
@@ -31,5 +38,13 @@ body{
     margin-left: 50px;
     left: 400px;
 
+}
+
+ul{
+    overflow:hidden; 
+    overflow-y:scroll;
+    list-style: none;
+    line-height: 30px;
+    max-height: 500px;
 }
 
