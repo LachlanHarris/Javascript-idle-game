@@ -12,9 +12,40 @@ var lettersOfHamlet = 130000;
 
 //incrementers
 var autoClickers = [0,0,0,0,0]
+var autoClickersIncreaseValue = [1,5,10,15,20]
+
 var autoClickersBasePrice = [50,500,1000,2000,5000]
 var autoClickersPrice = [50,500,1000,2000,5000]
-var autoClickersIncreaseValue = [1,5,10,15,20]
+
+
+// SAVE WORKS EXCEPT FOR
+// - AUTO CLICKERS DO NOT LOAD?
+// - AUTO CLICKERS BUTTON AND COUNTS DONT UPDATE BECAUSE THEY ARE ONLY CALLED WHEN CLICKEd
+
+// function saveGame(){
+//     var save = {
+//         monkeys: monkeys,
+//         money: money,
+//         wage: wage,
+//         MPS: MPS,
+//         DPS: DPS,
+//         clickModifier: clickModifier, 
+//         possibleKeystrokes: possibleKeystrokes,
+//         autoClicker: autoClickers,
+//         autoClickersIncreaseValue: autoClickersIncreaseValue,
+//         autoClickersPrice: autoClickersPrice,
+//         autoClickersBasePrice: autoClickersBasePrice
+//     }
+
+//     localStorage.setItem("save",JSON.stringify(save)); 
+// }
+
+// window.onload = function loadGame(){
+//     var savegame = JSON.parse(localStorage.getItem("save")); 
+//     for(const element in savegame){
+//         if (typeof savegame[element] !== "undefined") window[element] = savegame[element]
+//     }
+// }
 
 //from https://stackoverflow.com/questions/149055/how-to-format-numbers-as-currency-strings
 var formatter = new Intl.NumberFormat('en-US', {
@@ -64,7 +95,8 @@ function moneyIncrement(){
 
 // Game tick 
 window.setInterval(function(){
-
+    //saveGame()
+    
     monkeyIncrement()
     moneyIncrement()
 
