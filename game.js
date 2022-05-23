@@ -1,14 +1,30 @@
+//import upgrade from "./upgrades.js"
 'use strict'
 
-//info
-var monkeys = 0;
-var money = 0;
-var wage = 0.5;
-var MPS = 0
-var DPS = 0
-var clickModifier = 1;
-var possibleKeystrokes = 88;
-var lettersOfHamlet = 130000;
+class Upgrade{
+    constructor(name, field, modifierSign, modifier){
+        this.name = name;
+        this.field = field;
+        this.modifierSign = modifierSign
+        this.modifier = modifier
+    }
+}
+
+class Player{
+    monkeys = 0;
+    money = 0;
+    wage = 0.5;
+    MPS = 0
+    DPS = 0
+    clickModifier = 1;
+    possibleKeystrokes = 88;
+    lettersOfHamlet = 130000;
+    constructor(){
+
+    }
+}
+
+const player = new Player()
 
 //incrementers
 var autoClickers = [0,0,0,0,0]
@@ -16,6 +32,110 @@ var autoClickersIncreaseValue = [1,5,10,15,20]
 
 var autoClickersBasePrice = [50,500,1000,2000,5000]
 var autoClickersPrice = [50,500,1000,2000,5000]
+
+const first_upgrade = new Upgrade("test", "clickModifier", "+", 2)
+
+
+//from https://stackoverflow.com/questions/149055/how-to-format-numbers-as-currency-strings
+var formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+
+    minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+    maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+  });
+
+function monkeyClick(number){
+    player.monkeys += number * player.clickModifier;
+    document.getElementById("monkeys").innerHTML = "Monkeys: " + player.monkeys;
+};
+
+function autoClickerBuyUpdateFields(tier, id){
+    document.getElementById("money").innerHTML = formatter.format(player.money);
+    document.getElementById("MPS").innerHTML = "MPS: " + player.MPS;
+    document.getElementById(id).innerHTML = ( id + " $" + autoClickersPrice[tier] );
+    document.getElementById(id+"Count").innerHTML = (" count: " + autoClickers[tier]);
+}
+
+function autoClickerBuy(tier ,id){
+    if (autoClickersPrice[tier] < player.money){
+        player.money -= autoClickersPrice[tier];
+        autoClickers[tier] = autoClickers[tier] + 1;
+        autoClickersPrice[tier] = Math.round(autoClickersBasePrice[tier] * 1.15**autoClickers[tier]);
+        player.MPS += autoClickersIncreaseValue[tier];
+    }
+
+    autoClickerBuyUpdateFields(tier, id);
+}
+
+function buyUpgrade(upgrade){
+    switch(upgrade.modifierSign){
+    case "+":
+        player[upgrade.field] = player[upgrade.field] + upgrade.modifier;
+        break;
+    case "*":
+        player[upgrade.field] = player[upgrade.field] * upgrade.modifier;
+        break;
+    case "-":
+        player[upgrade.field] = player[upgrade.field] - upgrade.modifier;
+        break;
+    case "/":
+        player[upgrade.field] = floor(player[upgrade.field] / upgrade.modifier);
+        break;
+    }
+}
+
+function monkeyIncrement(){
+    for (let i = 0; i < autoClickers.length; i++){
+        player.monkeys += (autoClickers[i] * autoClickersIncreaseValue[i]);
+    }
+}
+
+function moneyIncrement(){
+    player.money += (player.monkeys * player.wage);
+}
+
+// Game tick 
+window.setInterval(function(){
+    //saveGame()
+    
+    monkeyIncrement();
+    moneyIncrement();
+
+    document.getElementById("monkeys").innerHTML = "Monkeys: " + player.monkeys;
+    document.getElementById("MPS").innerHTML = "MPS: " + player.MPS;
+    document.getElementById("odds").innerHTML = "Current odds of typing hamlet: " + player.possibleKeystrokes + "<sup>" + player.lettersOfHamlet +"</sup>";
+    
+    document.getElementById("money").innerHTML = formatter.format(player.money);  
+    document.getElementById("DPS").innerHTML = "$PS: " + player.monkeys * player.wage;
+    document.getElementById("wage").innerHTML = "wage per monkey: " + player.wage;
+
+    document.getElementById("clickModifier").innerHTML = "clickModifier: " + player.clickModifier;
+}, 1000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // SAVE WORKS EXCEPT FOR
@@ -46,64 +166,3 @@ var autoClickersPrice = [50,500,1000,2000,5000]
 //         if (typeof savegame[element] !== "undefined") window[element] = savegame[element]
 //     }
 // }
-
-//from https://stackoverflow.com/questions/149055/how-to-format-numbers-as-currency-strings
-var formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-
-    minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-    maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
-  });
-
-function monkeyClick(number){
-    monkeys += number*clickModifier;
-    document.getElementById("monkeys").innerHTML = "Monkeys: " + monkeys;
-};
-
-function autoClickerBuyUpdateFields(tier, id){
-    document.getElementById("money").innerHTML = formatter.format(money);
-    document.getElementById("MPS").innerHTML = "MPS: " + MPS
-    document.getElementById(id).innerHTML = ( id + " $" + autoClickersPrice[tier] );
-    document.getElementById(id+"Count").innerHTML = (" count: " + autoClickers[tier]);
-}
-
-function autoClickerBuy(tier ,id){
-    if (autoClickersPrice[tier] < money){
-        money -= autoClickersPrice[tier]
-        autoClickers[tier] = autoClickers[tier] + 1
-        autoClickersPrice[tier] = Math.round(autoClickersBasePrice[tier] * 1.15**autoClickers[tier])
-        MPS += autoClickersIncreaseValue[tier]
-    }
-
-    autoClickerBuyUpdateFields(tier, id)
-}
-
-function buyUpgrade(){
-    
-}
-
-function monkeyIncrement(){
-    for (let i = 0; i < autoClickers.length; i++){
-        monkeys += (autoClickers[i] * autoClickersIncreaseValue[i])
-    }
-}
-
-function moneyIncrement(){
-    money += (monkeys * wage)
-}
-
-// Game tick 
-window.setInterval(function(){
-    //saveGame()
-    
-    monkeyIncrement()
-    moneyIncrement()
-
-    document.getElementById("monkeys").innerHTML = "Monkeys: " + monkeys;
-    document.getElementById("MPS").innerHTML = "MPS: " + MPS
-    
-    document.getElementById("money").innerHTML = formatter.format(money);  
-    document.getElementById("DPS").innerHTML = "$PS: " + monkeys*wage
-    document.getElementById("wage").innerHTML = "wage per monkey: " + wage
-}, 1000);
