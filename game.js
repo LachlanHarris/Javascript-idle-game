@@ -1,4 +1,6 @@
-//import upgrade from "./upgrades.js"
+//IDEAS
+//get players to buy rolls of the odds to write the target book
+//reduce chances by letters - (monkeys/keystrokes)
 'use strict'
 
 class Upgrade{
@@ -35,6 +37,7 @@ var autoClickersPrice = [50,500,1000,2000,5000]
 
 const first_upgrade = new Upgrade("test", "clickModifier", "+", 2)
 
+var upgrades = [first_upgrade]
 
 //from https://stackoverflow.com/questions/149055/how-to-format-numbers-as-currency-strings
 var formatter = new Intl.NumberFormat('en-US', {
@@ -47,13 +50,10 @@ var formatter = new Intl.NumberFormat('en-US', {
 
 function monkeyClick(number){
     player.monkeys += number * player.clickModifier;
-    document.getElementById("monkeys").innerHTML = "Monkeys: " + player.monkeys;
 };
 
 function autoClickerBuyUpdateFields(tier, id){
-    document.getElementById("money").innerHTML = formatter.format(player.money);
-    document.getElementById("MPS").innerHTML = "MPS: " + player.MPS;
-    document.getElementById(id).innerHTML = ( id + " $" + autoClickersPrice[tier] );
+    document.getElementById(id).innerHTML = ( id + " $" + formatter.format(autoClickersPrice[tier] ));
     document.getElementById(id+"Count").innerHTML = (" count: " + autoClickers[tier]);
 }
 
@@ -74,13 +74,13 @@ function buyUpgrade(upgrade){
         player[upgrade.field] = player[upgrade.field] + upgrade.modifier;
         break;
     case "*":
-        player[upgrade.field] = player[upgrade.field] * upgrade.modifier;
+        player[upgrade.field] = Math.floor(player[upgrade.field] * upgrade.modifier);
         break;
     case "-":
         player[upgrade.field] = player[upgrade.field] - upgrade.modifier;
         break;
     case "/":
-        player[upgrade.field] = floor(player[upgrade.field] / upgrade.modifier);
+        player[upgrade.field] = Math.floor(player[upgrade.field] / upgrade.modifier);
         break;
     }
 }
@@ -98,21 +98,23 @@ function moneyIncrement(){
 // Game tick 
 window.setInterval(function(){
     //saveGame()
-    
     monkeyIncrement();
     moneyIncrement();
+    
+}, 1000);
+//gui update
+window.setInterval(function(){
 
     document.getElementById("monkeys").innerHTML = "Monkeys: " + player.monkeys;
     document.getElementById("MPS").innerHTML = "MPS: " + player.MPS;
     document.getElementById("odds").innerHTML = "Current odds of typing hamlet: " + player.possibleKeystrokes + "<sup>" + player.lettersOfHamlet +"</sup>";
     
     document.getElementById("money").innerHTML = formatter.format(player.money);  
-    document.getElementById("DPS").innerHTML = "$PS: " + player.monkeys * player.wage;
+    document.getElementById("DPS").innerHTML = "$PS: " + formatter.format(player.monkeys * player.wage);
     document.getElementById("wage").innerHTML = "wage per monkey: " + player.wage;
 
-    document.getElementById("clickModifier").innerHTML = "clickModifier: " + player.clickModifier;
-}, 1000);
-
+    document.getElementById("clickModifier").innerHTML = "click modifier: " + player.clickModifier;
+},100)
 
 
 
