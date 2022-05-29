@@ -1,16 +1,23 @@
 //IDEAS
 //get players to buy rolls of the odds to write the target book
-//reduce chances by letters - (monkeys/keystrokes)
+//reduce chances by letters - (monkeys/keystrokes) --> this doesnt make sense btw
 'use strict'
 
+//this is a disgusting class but im not sure how else to implement this without reading from a file?
 class Upgrade{
-    constructor(name, description, field, modifierSign, modifier, cost){
+    constructor(name, description, field, modifierSign, modifier, cost, unlockField, unlockThreshold, unlocked ){
         this.name = name;
         this.description = description;
         this.field = field;
+
         this.modifierSign = modifierSign
         this.modifier = modifier;
         this.cost = cost;
+
+        this.unlockField = unlockField;
+        this.unlockThreshold = unlockThreshold;
+        this.unlocked = unlocked;
+
     }
 }
 
@@ -28,18 +35,32 @@ class Player{
     }
 }
 
+class Incrementer{
+    constructor(name, description, count, increaseValue, basePrice, currentPrice, unlockThreshold, unlocked){
+        this.name = name;
+        this.description = description;
+        this.count = count;
+        this.increaseValue = increaseValue;
+        this.basePrice = basePrice;
+        this.currentPrice = currentPrice;
+
+        this.unlockThreshold = unlockThreshold;
+        this.unlocked = unlocked;
+    }
+}
+
 const player = new Player();
 
-//incrementers
-var autoClickers = [0,0,0,0,0];
-var autoClickersIncreaseValue = [1,5,10,15,20];
+var firstIncrementer = new Incrementer("1", "description", 0, 1, 500, 500, 25, false);
+var secondIncrementer = new Incrementer("2", "description", 0, 5, 2000, 2000, 200, false);
+var thirdIncrementer = new Incrementer("3", "description", 0, 10, 5000, 5000, 500, false);
+var fourthIncrementer = new Incrementer("4", "description", 0, 15, 10000, 10000, 1000, false);
+var fifthIncrementer = new Incrementer("5", "description", 0, 20, 20000, 20000, 2000, false);
+var incrementers = [firstIncrementer,secondIncrementer,thirdIncrementer,fourthIncrementer,fifthIncrementer];
 
-var autoClickersBasePrice = [50,500,1000,2000,5000];
-var autoClickersPrice = [50,500,1000,2000,5000];
+var firstUpgrade = new Upgrade("name of upgrade", "this is an upgrade", "clickModifier", "+", 2, 100, "monkeys", 50, false);
 
-var first_upgrade = new Upgrade("name of upgrade", "this is an upgrade", "clickModifier", "+", 2, 100);
-
-var upgrades = [first_upgrade];
+var upgrades = [firstUpgrade];
 
 //from https://stackoverflow.com/questions/149055/how-to-format-numbers-as-currency-strings
 var formatter = new Intl.NumberFormat('en-US', {
@@ -54,20 +75,79 @@ function monkeyClick(number){
     player.monkeys += number * player.clickModifier;
 };
 
-function autoClickerBuyUpdateFields(tier, id){
-    document.getElementById(id).innerHTML = ( id + " " + formatter.format(autoClickersPrice[tier] ));
-    document.getElementById(id+"Count").innerHTML = (" count: " + autoClickers[tier]);
+function monkeyIncrement(){
+    for (let i = 0; i < incrementers.length; i++){
+        player.monkeys += (incrementers[i].count * incrementers[i].increaseValue);
+    }
 }
 
-function autoClickerBuy(tier ,id){
-    if (autoClickersPrice[tier] <= player.money){
-        player.money -= autoClickersPrice[tier];
-        autoClickers[tier] = autoClickers[tier] + 1;
-        autoClickersPrice[tier] = Math.round(autoClickersBasePrice[tier] * 1.15**autoClickers[tier]);
-        player.MPS += autoClickersIncreaseValue[tier];
-    }
+function moneyIncrement(){
+    player.money += (player.monkeys * player.wage);
+}
 
-    autoClickerBuyUpdateFields(tier, id);
+//incrementer functions
+function updateIncrementerButton(incrementer){
+    var id = incrementer.name;
+    document.getElementById(id).innerHTML = ( id + " " + formatter.format(incrementer.currentPrice ));
+    document.getElementById(id + "Count").innerHTML = (" count: " + incrementer.count);
+
+}
+
+function checkUnlockIncrementers(incrementers){
+    for (let x in incrementers){
+        var incrementer = incrementers[x]
+
+        if (incrementer.unlocked == false){
+            if (player.monkeys >=  incrementer.unlockThreshold){
+                createIncrementerButton(incrementer);                
+                incrementers[x].unlocked = true;
+            }
+        }
+    }
+}
+
+function createIncrementerButton(incrementer){
+    var li = document.createElement("li")
+    var button = document.createElement('button');
+    var span = document.createElement("span")
+    //configure button
+    button.id = incrementer.name;
+    button.type = 'button';
+    button.innerHTML = incrementer.name + " $" + incrementer.currentPrice;
+    button.title = incrementer.description;
+
+    button.onclick = function(){
+        if (player.money >= incrementer.currentPrice){
+            player.money -= incrementer.currentPrice;
+            incrementer.currentPrice = Math.round(incrementer.currentPrice*1.15);
+            incrementer.count += 1;
+            player.MPS += incrementer.increaseValue;
+            updateIncrementerButton(incrementer);
+        }
+    };
+
+    span.id = incrementer.name + "Count"
+    span.innerHTML = " count: " + incrementer.count;
+    //find container of list
+    var container = document.getElementById("incrementersList");
+    //append button to list index and list index to list
+    li.appendChild(button);   
+    li.appendChild(span);
+    container.appendChild(li);
+}
+
+//upgrade functions
+function checkUnlockUpgrades(upgrades){
+    for (let x in upgrades){
+        var upgrade = upgrades[x]
+
+        if (upgrade.unlocked == false){
+            if (player[upgrade.unlockField] >=  upgrade.unlockThreshold){
+                createUpgradeButton(upgrade);                
+                upgrades[x].unlocked = true;
+            }
+        }
+    }
 }
 
 function buyUpgrade(upgrade){
@@ -87,23 +167,13 @@ function buyUpgrade(upgrade){
     }
 }
 
-function monkeyIncrement(){
-    for (let i = 0; i < autoClickers.length; i++){
-        player.monkeys += (autoClickers[i] * autoClickersIncreaseValue[i]);
-    }
-}
-
-function moneyIncrement(){
-    player.money += (player.monkeys * player.wage);
-}
-
 function createUpgradeButton(upgrade){
     //create list index and button
     var li = document.createElement("li")
     var button = document.createElement('button');
     //configure button
     button.type = 'button';
-    button.innerHTML = upgrade.name;
+    button.innerHTML = upgrade.name + " $" + upgrade.cost;
     button.title = upgrade.description;
 
     button.onclick = function(){
@@ -123,7 +193,6 @@ function createUpgradeButton(upgrade){
 }
 
 window.onload = function(){
-    createUpgradeButton(first_upgrade);
 }
 
 // Game tick 
@@ -131,14 +200,19 @@ window.setInterval(function(){
     //saveGame()
     monkeyIncrement();
     moneyIncrement();
+    checkUnlockUpgrades(upgrades);
+    checkUnlockIncrementers(incrementers)
     
 }, 1000);
+
 //gui update
 window.setInterval(function(){
 
     document.getElementById("monkeys").innerHTML = "Monkeys: " + player.monkeys;
     document.getElementById("MPS").innerHTML = "MPS: " + player.MPS;
-    document.getElementById("odds").innerHTML = "Current odds of typing hamlet: " + player.possibleKeystrokes + "<sup>" + player.lettersOfHamlet +"</sup>";
+    document.getElementById("odds").innerHTML = "Base odds of typing hamlet: " + player.possibleKeystrokes + "<sup>" + player.lettersOfHamlet +"</sup>";
+    //this doesnt actually work out mathematically i was just having a senior moments
+    document.getElementById("currentOdds").innerHTML = "Current odds of typing hamlet: " + player.possibleKeystrokes + "<sup>" + (player.lettersOfHamlet - Math.floor(player.monkeys/player.possibleKeystrokes)) +"</sup>";
     
     document.getElementById("money").innerHTML = formatter.format(player.money);  
     document.getElementById("DPS").innerHTML = "$PS: " + formatter.format(player.monkeys * player.wage);

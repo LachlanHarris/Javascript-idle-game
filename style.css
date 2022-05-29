@@ -18,6 +18,11 @@ body{
     left: 600px;
 
 }
+#currentOdds{
+    position: absolute;
+    left: 600px;
+
+}
 
 #monkeyButton{
     border-radius: 15px;

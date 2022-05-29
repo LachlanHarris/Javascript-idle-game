@@ -14,11 +14,12 @@
       <br />
       <span id="monkeys">Monkeys: 0</span>
       <span id="MPS">MPS: 0</span>
-      <span id="odds">Current odds of typing hamlet: 88<sup>130000</sup> </span>
+      <span id="odds">Base odds of typing hamlet: 88<sup>130000</sup> </span>
       <br />
       <br />
       <span id="money">$0</span>
       <span id="DPS">$PS: 0</span>
+      <span id="currentOdds">Current odds of typing hamlet: 88<sup>130000</sup> </span>
       <br />
       <span id="wage">wage per monkey: 0.5</span> 
       <br />
@@ -33,45 +34,13 @@
 
     <div class="incrementers">
       <header><h1>Auto Clickers</h1></header>
-      <ul>
-        <li>
-
-          <button id="firstIncrementer" type="button", onClick="autoClickerBuy(0,id)">firstIncrementer $50</button>
-          <span id="firstIncrementerCount"> count: 0</span>
-
-        </li>
-        <li>
-
-          <button id="secondIncrementer" type="button", onClick="autoClickerBuy(1,id)">secondIncrementer $500</button> 
-          <span id="secondIncrementerCount"> count: 0</span>
-
-        </li>
-        <li>
-
-          <button id="thirdIncrementer" type="button", onClick="autoClickerBuy(2,id)">thirdIncrementer $1000 </button> 
-          <span id="thirdIncrementerCount"> count: 0</span>
-
-        </li>
-        <li>
-
-          <button id="fourthIncrementer" type="button", onClick="autoClickerBuy(3,id)">fourthIncrementer $2000 </button> 
-          <span id="fourthIncrementerCount"> count: 0</span>
-
-        </li>
-        <li>
-
-          <button id="fifthIncrementer" type="button", onClick="autoClickerBuy(4,id)">fifthIncrementer $5000 </button> 
-          <span id="fifthIncrementerCount"> count: 0</span>
-        </li>
+      <ul id = "incrementersList">
       </ul>
     </div>
 
     <div class="upgrades">
       <header><h1>Upgrades</h1></header>
       <ul id = "upgradeList">
-        <!-- <li>
-          <button id="upgrade1" type="button", onClick="buyUpgrade(first_upgrade)"> Upgrade</button>
-        </li> -->
       </ul> 
     </div>
 
