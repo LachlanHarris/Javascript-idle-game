@@ -4,11 +4,13 @@
 'use strict'
 
 class Upgrade{
-    constructor(name, field, modifierSign, modifier){
+    constructor(name, description, field, modifierSign, modifier, cost){
         this.name = name;
+        this.description = description;
         this.field = field;
         this.modifierSign = modifierSign
-        this.modifier = modifier
+        this.modifier = modifier;
+        this.cost = cost;
     }
 }
 
@@ -26,18 +28,18 @@ class Player{
     }
 }
 
-const player = new Player()
+const player = new Player();
 
 //incrementers
-var autoClickers = [0,0,0,0,0]
-var autoClickersIncreaseValue = [1,5,10,15,20]
+var autoClickers = [0,0,0,0,0];
+var autoClickersIncreaseValue = [1,5,10,15,20];
 
-var autoClickersBasePrice = [50,500,1000,2000,5000]
-var autoClickersPrice = [50,500,1000,2000,5000]
+var autoClickersBasePrice = [50,500,1000,2000,5000];
+var autoClickersPrice = [50,500,1000,2000,5000];
 
-const first_upgrade = new Upgrade("test", "clickModifier", "+", 2)
+var first_upgrade = new Upgrade("name of upgrade", "this is an upgrade", "clickModifier", "+", 2, 100);
 
-var upgrades = [first_upgrade]
+var upgrades = [first_upgrade];
 
 //from https://stackoverflow.com/questions/149055/how-to-format-numbers-as-currency-strings
 var formatter = new Intl.NumberFormat('en-US', {
@@ -53,12 +55,12 @@ function monkeyClick(number){
 };
 
 function autoClickerBuyUpdateFields(tier, id){
-    document.getElementById(id).innerHTML = ( id + " $" + formatter.format(autoClickersPrice[tier] ));
+    document.getElementById(id).innerHTML = ( id + " " + formatter.format(autoClickersPrice[tier] ));
     document.getElementById(id+"Count").innerHTML = (" count: " + autoClickers[tier]);
 }
 
 function autoClickerBuy(tier ,id){
-    if (autoClickersPrice[tier] < player.money){
+    if (autoClickersPrice[tier] <= player.money){
         player.money -= autoClickersPrice[tier];
         autoClickers[tier] = autoClickers[tier] + 1;
         autoClickersPrice[tier] = Math.round(autoClickersBasePrice[tier] * 1.15**autoClickers[tier]);
@@ -93,6 +95,35 @@ function monkeyIncrement(){
 
 function moneyIncrement(){
     player.money += (player.monkeys * player.wage);
+}
+
+function createUpgradeButton(upgrade){
+    //create list index and button
+    var li = document.createElement("li")
+    var button = document.createElement('button');
+    //configure button
+    button.type = 'button';
+    button.innerHTML = upgrade.name;
+    button.title = upgrade.description;
+
+    button.onclick = function(){
+        if (player.money >= upgrade.cost){
+            player.money -= upgrade.cost
+            buyUpgrade(upgrade);
+            container.removeChild(li);
+        }
+    };
+
+    //find container of list
+    var container = document.getElementById("upgradeList");
+    //append button to list index and list index to list
+    li.appendChild(button);   
+    container.appendChild(li);
+    
+}
+
+window.onload = function(){
+    createUpgradeButton(first_upgrade);
 }
 
 // Game tick 
